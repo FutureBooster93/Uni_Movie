@@ -1,6 +1,6 @@
 ﻿@model Uni_Movie.ViewModels.MovieCreateViewModel
 
-	<div class="container">
+	<div class="container py-5">
 
 		<form method="post" enctype="multipart/form-data">
 			<div class="row">
@@ -38,6 +38,9 @@
 				<div class ="col-12 col-md-6 py-2" asp-validation-summary="All"></div>
 			</div>
 		</form>
+	<div class="d-flex row justify-content-center py-3">
+		<a class="col-12 col-md-6 btn btn-secondary text-white" asp-controller="Movie" asp-action="Index">Back</a>
+	</div>
 	</div>
 	@section Scripts{
 		@{

@@ -1,56 +1,77 @@
-﻿@model List<Uni_Movie.Models.Movie>
-<!-- Breadcrumb row -->
-<!-- Breadcrumb row END -->
-<!-- inner page banner END -->
-<div class="content-block">
-	<!-- About Us -->
-	<div class="section-area section-sp1">
-		<div class="container">
-			<div class="row">
-				<div class="col-12">
-					<div class="row">
-						@foreach (var item in Model)
-						{
-
-							<div class="col-md-6 col-lg-4 col-sm-6 m-b30">
-								<div class="cours-bx" style="background-color:darkgray">
-									<div class="action-box">
-										<a href="#">
-											<img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.MovieImage)}")" alt="">
-										</a>
-									</div>
-									<div class="info-bx text-center">
-										<h5><a class="text-black" style="text-decoration:none" href="#">@item.Title</a></h5>
-										<span class="text-secondary">@item.Director</span>
-									</div>
-									<div class="cours-more-info">
-										<div class="review text-center">
-											<span style="font-size:16px">IMDB: @item.Rate</span>
-
-										</div>
-										<div class="review text-center">
-											<span class="text-black" style="font-size:16px">genre: @item.genre.title </span>
-										</div>
-									</div>
-								</div>
-							</div>
-						}
-
-						<div class="col-lg-12 m-b20">
-							<div class="pagination-bx rounded-sm gray clearfix">
-								<ul class="pagination justify-content-center">
-									<li class="previous"><a href="#"><i class="ti-arrow-right"></i> قبلی</a></li>
-									<li class="active"><a href="#">1</a></li>
-									<li><a href="#">2</a></li>
-									<li><a href="#">3</a></li>
-									<li class="next"><a href="#">بعدی<i class="ti-arrow-left"></i></a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+﻿@model IEnumerable<Movie>
+<div class="d-flex row justify-content-center py-3">
+	<a class="col-12 col-md-6 btn btn-success text-black" asp-controller="Movie" asp-action="Create">Create a new movie</a>
 </div>
-<!-- contact area END -->
+<table class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			<th>
+				Title
+			</th>
+			<th>
+				Genre
+			</th>
+			<th>Director</th>
+			<th>Year</th>
+			<th>Rate</th>
+			<th>Image</th>
+			<th>Edit/Delete</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach(var item in Model)
+		{
+			<tr>
+				<td>@item.Title</td>
+				<td>@item.genre.title</td>
+				<td>@item.Director</td>
+				<td>@item.Year</td>
+				<td>@item.Rate</td>
+				<td><img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.MovieImage)}")" style="max-width:120px;max-height:100px" /></td>
+				<td>
+					<a asp-controller="Movie" asp-action="Update" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+					<a onclick="DeleteAlert(`/Movie/Delete/${@item.Id}`)" class="btn btn-sm btn-danger">Delete</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+@section Scripts {
+
+	<script>
+		function DeleteAlert(url) {
+			Swal.fire({
+				title: "?Are you sure",
+				text: "You won't be able to revert this",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#3085d6",
+				cancelButtonColor: "#d33",
+				confirmButtonText: "!Yes, delete it"
+			}).then((result) => {
+				if (result.isConfirmed) {
+					$.ajax({
+						url: url,
+						type: 'DELETE',
+						success: function (value) {
+							if (value.success) {
+								Swal.fire({
+									title: "!Deleted",
+									text: "Your file has been deleted",
+									icon: "success"
+								});
+								setTimeout(function () {
+									location.reload()
+									// Code to be executed after the delay
+								}, 1500);
+
+							}
+						}
+					})
+
+				}
+			});
+		}
+	</script>
+
+	}

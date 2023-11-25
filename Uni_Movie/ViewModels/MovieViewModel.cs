@@ -11,7 +11,8 @@ namespace Uni_Movie.ViewModels
 		public DateTime Year { get; set; }
 		[Required]
 		public IFormFile MovieImage { get; set; }
-		[Required]
+		public byte[] Image { get; set; } = null;
+        [Required]
 		[Range(1, 10)]
 		public double Rate { get; set; }
 		[Required]
