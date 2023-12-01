@@ -7,6 +7,7 @@ using Uni_Movie.ViewModels;
 using Uni_Movie.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
+using Humanizer.Bytes;
 
 namespace Uni_Movie.Controllers
 {
@@ -120,7 +121,7 @@ namespace Uni_Movie.Controllers
 						Year = model.movie.Year,
 						Rate = model.movie.Rate,
 						genreId = model.movie.genreId,
-						MovieImage = model.movie.Image
+						MovieImage =model.movie.Image,
 					};
 					db.Movies.Update(movie);
 					await db.SaveChangesAsync();
