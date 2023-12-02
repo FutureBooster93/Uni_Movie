@@ -8,9 +8,11 @@ using Uni_Movie.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Humanizer.Bytes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Uni_Movie.Controllers
 {
+	[Authorize(Roles = "admins")]
 	public class MovieController : Controller
 	{
 		private readonly ApplicationDbContext db;

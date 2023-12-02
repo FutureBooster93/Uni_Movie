@@ -93,12 +93,29 @@
 										<div class="col-md-6 col-lg-4 col-sm-6 m-b30">
 											<div class="cours-bx" style="background-color:darkgray">
 												<div class="action-box">
-													<a href="#">
-														<img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.MovieImage)}")" alt="">
-													</a>
+													@if (User.Identity.IsAuthenticated)
+													{
+														<a asp-action="Details" asp-route-genreId="@item.genreId">
+															<img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.MovieImage)}")" alt="">
+														</a>
+													}
+													else
+													{
+														<a asp-action="Details">
+															<img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.MovieImage)}")" alt="">
+														</a>
+													}
 												</div>
 												<div class="info-bx text-center">
-													<h5><a class="text-black" style="text-decoration:none" href="#">@item.Title</a></h5>
+													<h5>
+														@if (User.Identity.IsAuthenticated)
+														{
+															<a asp-action="Details" asp-route-genreId="@item.genreId" class="text-black" style="text-decoration:none" >@item.Title</a>
+														}else
+														{
+															<a asp-action="Details" class="text-black" style="text-decoration:none" >@item.Title</a>
+														}
+													</h5>
 													<span class="text-secondary">@item.Director</span>
 												</div>
 												<div class="cours-more-info">
@@ -117,11 +134,38 @@
 									<div class="col-lg-12 m-b20">
 										<div class="pagination-bx rounded-sm gray clearfix">
 											<ul class="pagination justify-content-center">
-												<li class="previous"><a href="#"><i class="ti-arrow-right"></i> قبلی</a></li>
-												<li class="active"><a href="#">1</a></li>
-												<li><a href="#">2</a></li>
-												<li><a href="#">3</a></li>
-												<li class="next"><a href="#">بعدی<i class="ti-arrow-left"></i></a></li>
+												@{
+													double dev = Convert.ToDouble(ViewData["count"]) / Model.paginationDTO.PageSiez;
+													int totalPages = (int)Math.Ceiling(dev);
+												}
+												@if (Model.paginationDTO.PageNumber == 1)
+												{
+													<li class="page-item"><button class="btn" disabled>Previous</button></li>
+												}
+												else
+												{
+													<li class="page-item"><a class="page-link" asp-controller="Home" asp-action="Index" asp-route-pageNumber="@(Model.paginationDTO.PageNumber-1)">Previous</a></li>
+												}
+												@for (int i = 1; i < totalPages + 1; i++)
+												{
+													if (i == Model.paginationDTO.PageNumber)
+													{
+														<li class="page-item"><a class="page-link active" asp-controller="Home" asp-action="Index" asp-route-pageNumber="@i">@i</a></li>
+													}
+													else
+													{
+														<li class="page-item"><a class="page-link" asp-controller="Home" asp-action="Index" asp-route-pageNumber="@i">@i</a></li>
+
+													}
+												}
+												@if (Model.paginationDTO.PageNumber != totalPages)
+												{
+													<li class="page-item"><a class="page-link" asp-controller="Home" asp-action="Index" asp-route-pageNumber="@(Model.paginationDTO.PageNumber+1)">Next</a></li>
+												}
+												else
+												{
+													<li class="page-item"><button class="btn" disabled>Next</button></li>
+												}
 											</ul>
 										</div>
 									</div>
@@ -141,11 +185,11 @@
 		<!-- contact area END -->
 	</div>
 	<!-- Content END-->
-	
+
 </body>
 </html>
 @section Scripts{
 	@{
-		<partial name="_Notifications"/>
+		<partial name="_Notifications" />
 	}
 }

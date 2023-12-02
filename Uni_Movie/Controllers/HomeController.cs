@@ -16,15 +16,21 @@ namespace Uni_Movie.Controllers
 		{
 			db = _db;
 		}
-		public IActionResult Index()
+		public IActionResult Index(int pageNumber)
 		{
-
+			var count = db.Movies.ToList().Count();
+			ViewData["count"] = count;
 			HomeViewModel model = new HomeViewModel()
 			{
 				genreList = db.Genres.Select(x => new SelectListItem { Text = x.title, Value = x.Id.ToString() }),
 				movieList = db.Movies.Include(x => x.genre).ToList(),
 				movie = null
 			};
+			if (pageNumber > 0)
+			{
+				model.paginationDTO.PageNumber = pageNumber;
+			}
+			model.movieList = model.movieList.Skip(model.paginationDTO.PageSiez * (model.paginationDTO.PageNumber - 1)).Take(model.paginationDTO.PageSiez);
 			return View(model);
 
 
@@ -57,7 +63,7 @@ namespace Uni_Movie.Controllers
 			}
 			return RedirectToAction("Index", viewModel);
 		}
-		public async Task<IActionResult> Filter( HomeViewModel viewModel)
+		public async Task<IActionResult> Filter(HomeViewModel viewModel)
 		{
 			if (viewModel.movie != null && viewModel.movie.genreId != 0)
 			{
@@ -85,6 +91,10 @@ namespace Uni_Movie.Controllers
 				viewModel.movie = null;
 				return View("Index", viewModel);
 			}
+		}
+		public IActionResult Details(int? genreId)
+		{
+			return View();
 		}
 	}
 }
