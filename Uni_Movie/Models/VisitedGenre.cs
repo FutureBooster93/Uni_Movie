@@ -12,6 +12,6 @@ namespace Uni_Movie.Models
         public int genreId { get; set; }
 		[ForeignKey("genreId")]
 		public Genre genre { get; set; }
-		public DateTime visitDatetime { get; set; }
+		public DateTime visitDatetime { get; set; }= DateTime.Now;
 	}
 }

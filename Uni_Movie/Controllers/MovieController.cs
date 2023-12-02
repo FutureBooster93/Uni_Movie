@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Humanizer.Bytes;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Uni_Movie.Areas.Identity.Data;
 
 namespace Uni_Movie.Controllers
 {
@@ -16,10 +18,12 @@ namespace Uni_Movie.Controllers
 	public class MovieController : Controller
 	{
 		private readonly ApplicationDbContext db;
+		private readonly UserManager<ApplicationUser> userManager;
 
-		public MovieController(ApplicationDbContext _db)
+		public MovieController(ApplicationDbContext _db, UserManager<ApplicationUser> _userManager)
 		{
 			db = _db;
+			userManager = _userManager;
 		}
 		public IActionResult Index()
 		{
@@ -123,7 +127,7 @@ namespace Uni_Movie.Controllers
 						Year = model.movie.Year,
 						Rate = model.movie.Rate,
 						genreId = model.movie.genreId,
-						MovieImage =model.movie.Image,
+						MovieImage = model.movie.Image,
 					};
 					db.Movies.Update(movie);
 					await db.SaveChangesAsync();
@@ -177,6 +181,46 @@ namespace Uni_Movie.Controllers
 			{
 				return Json(new { success = false });
 			}
+		}
+		[AllowAnonymous]
+		public async Task<IActionResult> Details(int? id)
+		{
+			var movie = await db.Movies.Where(x => x.Id == id).Include(x => x.genre).FirstOrDefaultAsync();
+			if (movie != null)
+			{
+				if (User.Identity.IsAuthenticated)
+				{
+					var user = await userManager.FindByNameAsync(User.Identity.Name);
+					if (user != null)
+					{
+						var visitedGenres = db.VisitedGenres.Where(x => x.userId == user.Id).Count();
+						if (visitedGenres <= 20)
+						{
+							VisitedGenre visitedGenre = new()
+							{
+								userId = user.Id,
+								genreId = movie.genreId
+							};
+							db.VisitedGenres.Add(visitedGenre);
+							db.SaveChanges();
+						}
+						else
+						{
+							var lastEntery = db.VisitedGenres.Where(x => x.userId == user.Id).OrderBy(x => x.visitDatetime).First();
+							db.Remove(lastEntery);
+							db.SaveChanges();
+							VisitedGenre visitedGenre = new()
+							{
+								userId = user.Id,
+								genreId = movie.genreId
+							};
+							db.VisitedGenres.Add(visitedGenre);
+							db.SaveChanges();
+						}
+					}
+				}
+			}
+			return View(movie);
 		}
 	}
 }

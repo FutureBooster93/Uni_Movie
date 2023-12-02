@@ -14,7 +14,7 @@
 						<h2>Global Movie</h2>
 						<h5>Cinema experience at home</h5>
 						<form class="cours-search" method="post" asp-controller="Home" asp-action="SearchMovie">
-							<div asp-validation-summary="All"></div>
+							<div asp-validation-summary="ModelOnly"></div>
 							<div class="input-group">
 								<input type="text" asp-for="movie.Title" class="form-control" placeholder="Search movie...">
 								<div class="input-group-append">
@@ -69,7 +69,7 @@
 						<form method="post" asp-controller="Home" asp-action="Filter">
 							<div class="row mb-3 py-3">
 								<div class="col-12">
-									<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+									<div asp-validation-summary="All" class="text-danger"></div>
 									<select name="genreId" class="col-6" asp-for="movie.genreId" asp-items="@Model.genreList">
 										<option selected disabled>---- Filter by genre ----</option>
 									</select>
@@ -93,28 +93,19 @@
 										<div class="col-md-6 col-lg-4 col-sm-6 m-b30">
 											<div class="cours-bx" style="background-color:darkgray">
 												<div class="action-box">
-													@if (User.Identity.IsAuthenticated)
-													{
-														<a asp-action="Details" asp-route-genreId="@item.genreId">
-															<img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.MovieImage)}")" alt="">
-														</a>
-													}
-													else
-													{
-														<a asp-action="Details">
-															<img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.MovieImage)}")" alt="">
-														</a>
-													}
+
+													<a asp-action="Details" asp-controller="Movie" asp-route-id="@item.Id">
+														<img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.MovieImage)}")" alt="">
+													</a>
+
+
 												</div>
 												<div class="info-bx text-center">
 													<h5>
-														@if (User.Identity.IsAuthenticated)
-														{
-															<a asp-action="Details" asp-route-genreId="@item.genreId" class="text-black" style="text-decoration:none" >@item.Title</a>
-														}else
-														{
-															<a asp-action="Details" class="text-black" style="text-decoration:none" >@item.Title</a>
-														}
+
+														<a asp-action="Details" asp-controller="Movie" asp-route-id="@item.Id" class="text-black" style="text-decoration:none">@item.Title</a>
+
+
 													</h5>
 													<span class="text-secondary">@item.Director</span>
 												</div>
@@ -135,7 +126,7 @@
 										<div class="pagination-bx rounded-sm gray clearfix">
 											<ul class="pagination justify-content-center">
 												@{
-													double dev = Convert.ToDouble(ViewData["count"]) / Model.paginationDTO.PageSiez;
+													double dev = Convert.ToDouble(ViewData["count"]) / Model.paginationDTO.PageSize;
 													int totalPages = (int)Math.Ceiling(dev);
 												}
 												@if (Model.paginationDTO.PageNumber == 1)
