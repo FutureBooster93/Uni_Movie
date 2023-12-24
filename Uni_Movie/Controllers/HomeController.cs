@@ -24,19 +24,9 @@ namespace Uni_Movie.Controllers
 		{
 			if (User.Identity.IsAuthenticated)
 			{
-				var user=await userManager.FindByNameAsync(User.Identity.Name);
-				var result = db.VisitedGenres.Where(x => x.userId == user.Id).AsEnumerable()
-					.GroupBy(x=>x.genreId).OrderByDescending(x=>x.AsQueryable().Count()).FirstOrDefault().ToList();
-				var genreId=result.FirstOrDefault()?.genreId;
-				var recomendMovie = db.Movies.Where(x => x.genreId == genreId).ToList();
-				List<Movie> recomendedMovies = new List<Movie>();
-				for (int i = 0; i < 3; i++)
-				{
-					Random random = new();
-					int rnd=random.Next(0,recomendMovie.Count);
-					recomendedMovies.Add(recomendMovie[rnd]);
-				}
-				TempData["recomended"]=recomendedMovies;
+				var user = await userManager.FindByNameAsync(User.Identity.Name);
+				var recommendedCount= db.VisitedGenres.Where(x => x.userId == user.Id).Count();
+				ViewData["recommendedCount"] = recommendedCount;
 			}
 			var count = db.Movies.ToList().Count();
 			ViewData["count"] = count;
@@ -83,6 +73,8 @@ namespace Uni_Movie.Controllers
 			}
 			return RedirectToAction("Index", viewModel);
 		}
+		[HttpPost]
+		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Filter(HomeViewModel viewModel)
 		{
 			if (viewModel.movie != null && viewModel.movie.genreId != 0)

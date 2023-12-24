@@ -70,8 +70,9 @@
 							<div class="row mb-3 py-3">
 								<div class="col-12">
 									<div asp-validation-summary="All" class="text-danger"></div>
-									<select name="genreId" class="col-6" asp-for="movie.genreId" asp-items="@Model.genreList">
+									<select name="genreId" class="col-6" asp-for="movie.genreId" asp-items="@Model.genreList" >
 										<option selected disabled>---- Filter by genre ----</option>
+										
 									</select>
 									<button class="btn btn-outline-primary">Filter</button>
 									<span asp-validation-for="movie.genreId"></span>
@@ -120,6 +121,14 @@
 												</div>
 											</div>
 										</div>
+									}
+									@if (User.Identity.IsAuthenticated)
+									{
+										int recommendCount =(int) ViewData["recommendedCount"];
+										@if (recommendCount>0){
+										
+										@await Component.InvokeAsync("RecommendedMovies")
+										}
 									}
 
 									<div class="col-lg-12 m-b20">
